@@ -1,4 +1,5 @@
 class SessionController < ApplicationController
+  before_action :logged_user, only: [:new, :create]
 
   def new
   end
@@ -21,7 +22,13 @@ class SessionController < ApplicationController
   end
 
   private
-  def session_params
-    params.require(:session).permit(:email, :password)
-  end
+    def session_params
+      params.require(:session).permit(:email, :password)
+    end
+
+    def logged_user
+      respond_to do |format|
+        format.html { redirect_to current_user, alert: "Já está logado!" }
+      end if logged_in?
+    end
 end

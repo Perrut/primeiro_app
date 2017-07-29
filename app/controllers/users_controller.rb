@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
-  before_action :non_logged_user
+  before_action :non_logged_user, except: [:new, :create]
+  before_action :logged_user, only: [:new, :create]
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   # GET /users
@@ -29,7 +30,7 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       if @user.save
-        format.html { redirect_to @user, notice: 'User was successfully created.' }
+        format.html { redirect_to login_path, alert: 'Cadastrou!' }
         format.json { render :show, status: :created, location: @user }
       else
         format.html { render :new }
@@ -71,5 +72,11 @@ class UsersController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
       params.require(:user).permit(:name, :email, :password, :password_confirmation)
+    end
+
+    def logged_user
+      respond_to do |format|
+        format.html { redirect_to current_user, alert: "Só usuários não logados podem!" }
+      end if logged_in?
     end
 end
